@@ -37,7 +37,7 @@ export function loadConfig(): Config {
 
   const { USE_SAMPLE_DATA, ...common } = baseResult.data;
 
-  if (USE_SAMPLE_DATA) {
+  if (USE_SAMPLE_DATA || common.TOPIC === "hydrogen") {
     return { ...common, USE_SAMPLE_DATA: true };
   }
 

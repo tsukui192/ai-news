@@ -3,6 +3,8 @@ import type { Config } from "../config.js";
 import type { Analysis } from "../analysis/schema.js";
 import { UserFacingError } from "../utils/errors.js";
 
+const SLACK_BLOCK_LIMIT = 50;
+
 export async function postToSlack(
   analysis: Analysis,
   config: Config,
@@ -10,13 +12,20 @@ export async function postToSlack(
   const client = new WebClient(config.SLACK_BOT_TOKEN);
   const blocks = buildBlocks(analysis);
 
-  const res = await client.chat.postMessage({
-    channel: config.SLACK_CHANNEL,
-    text: "24時間以内のAIトレンド",
-    blocks,
-  });
+  const chunks: KnownBlock[][] = [];
+  for (let i = 0; i < blocks.length; i += SLACK_BLOCK_LIMIT) {
+    chunks.push(blocks.slice(i, i + SLACK_BLOCK_LIMIT));
+  }
 
-  assertSlackOk(res);
+  for (const chunk of chunks) {
+    const res = await client.chat.postMessage({
+      channel: config.SLACK_CHANNEL,
+      text: "24時間以内のAIトレンド",
+      blocks: chunk,
+    });
+    assertSlackOk(res);
+  }
+
   console.info("Slack 投稿完了");
 }
 

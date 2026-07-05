@@ -1,7 +1,19 @@
 import type { RawTweet } from "../types.js";
 
 const RSS_FEEDS = [
+  // 米国
   "https://news.google.com/rss/search?q=hydrogen+market+OR+green+hydrogen+OR+hydrogen+energy+OR+hydrogen+fuel+cell&hl=en&gl=US&ceid=US:en",
+  // 欧州
+  "https://news.google.com/rss/search?q=hydrogen+energy+OR+green+hydrogen+OR+hydrogen+market+Europe&hl=en&gl=GB&ceid=GB:en",
+  // 中国
+  "https://news.google.com/rss/search?q=hydrogen+energy+China+OR+%E6%B0%A2%E8%83%BD+OR+green+hydrogen+China&hl=en&gl=US&ceid=US:en",
+  // 韓国
+  "https://news.google.com/rss/search?q=hydrogen+energy+Korea+OR+hydrogen+fuel+cell+Korea&hl=en&gl=US&ceid=US:en",
+  // オーストラリア
+  "https://news.google.com/rss/search?q=hydrogen+energy+Australia+OR+green+hydrogen+Australia&hl=en&gl=AU&ceid=AU:en",
+  // 台湾
+  "https://news.google.com/rss/search?q=hydrogen+energy+Taiwan+OR+hydrogen+fuel+Taiwan&hl=en&gl=US&ceid=US:en",
+  // 日本語
   "https://news.google.com/rss/search?q=%E6%B0%B4%E7%B4%A0+%E5%B8%82%E5%A0%B4+OR+%E6%B0%B4%E7%B4%A0%E3%82%A8%E3%83%8D%E3%83%AB%E3%82%AE%E3%83%BC+OR+%E3%82%B0%E3%83%AA%E3%83%BC%E3%83%B3%E6%B0%B4%E7%B4%A0&hl=ja&gl=JP&ceid=JP:ja",
 ];
 

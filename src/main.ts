@@ -28,16 +28,18 @@ async function main() {
   }
   console.info(`→ 記事/ツイート ${tweets.length}件 を取得`);
 
-  console.info("[2/4] URL本文を Jina Reader で取得中...");
-  const urlContents = await fetchUrlContents(tweets, config, settings);
-  console.info(`→ 本文取得済みURL: ${urlContents.size}件`);
+  let enrichedTweets;
+  if (topic === "hydrogen") {
+    // Google News RSSはすでに記事の説明文を含むためURL要約をスキップ
+    console.info("[2/4] Google News の説明文をそのまま使用（URL要約スキップ）");
+    enrichedTweets = tweets.map((t) => ({ ...t, enrichedText: t.text }));
+  } else {
+    console.info("[2/4] URL本文を Jina Reader で取得中...");
+    const urlContents = await fetchUrlContents(tweets, config, settings);
+    console.info(`→ 本文取得済みURL: ${urlContents.size}件`);
+    enrichedTweets = await summarizeUrls(tweets, urlContents, config, settings);
+  }
 
-  const enrichedTweets = await summarizeUrls(
-    tweets,
-    urlContents,
-    config,
-    settings,
-  );
   const analysis = await analyzeTrends(enrichedTweets, config, settings, topic);
 
   console.info("[4/4] Slack へ投稿中...");

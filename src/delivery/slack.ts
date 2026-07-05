@@ -1,5 +1,5 @@
 import { WebClient, type KnownBlock, type ChatPostMessageResponse } from "@slack/web-api";
-import type { Config } from "../config.js";
+import type { Config, Topic } from "../config.js";
 import type { Analysis } from "../analysis/schema.js";
 import { UserFacingError } from "../utils/errors.js";
 
@@ -8,9 +8,10 @@ const SLACK_BLOCK_LIMIT = 50;
 export async function postToSlack(
   analysis: Analysis,
   config: Config,
+  topic: Topic = "ai",
 ): Promise<void> {
   const client = new WebClient(config.SLACK_BOT_TOKEN);
-  const blocks = buildBlocks(analysis);
+  const blocks = buildBlocks(analysis, topic);
 
   const chunks: KnownBlock[][] = [];
   for (let i = 0; i < blocks.length; i += SLACK_BLOCK_LIMIT) {
@@ -40,12 +41,17 @@ function assertSlackOk(res: ChatPostMessageResponse): void {
   throw new UserFacingError(msg);
 }
 
-function buildBlocks(analysis: Analysis): KnownBlock[] {
+const TOPIC_TITLES: Record<Topic, string> = {
+  ai: "🤖 24時間以内のAIトレンド",
+  hydrogen: "⚗️ 24時間以内の水素市場トレンド",
+};
+
+function buildBlocks(analysis: Analysis, topic: Topic = "ai"): KnownBlock[] {
   const blocks: KnownBlock[] = [];
 
   blocks.push({
     type: "header",
-    text: { type: "plain_text", text: "🤖 24時間以内のAIトレンド", emoji: true },
+    text: { type: "plain_text", text: TOPIC_TITLES[topic], emoji: true },
   });
   blocks.push({ type: "divider" });
 

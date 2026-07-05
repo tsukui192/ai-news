@@ -9,6 +9,7 @@ const baseSchema = z.object({
     .enum(["true", "false", ""])
     .default("false")
     .transform((v) => v === "true"),
+  TOPIC: z.enum(["ai", "hydrogen"]).default("ai"),
 });
 
 const xSchema = z.object({
@@ -25,6 +26,8 @@ type Common = Omit<BaseParsed, "USE_SAMPLE_DATA">;
 export type Config =
   | (Common & { USE_SAMPLE_DATA: true })
   | (Common & { USE_SAMPLE_DATA: false } & XParsed);
+
+export type Topic = "ai" | "hydrogen";
 
 export function loadConfig(): Config {
   const baseResult = baseSchema.safeParse(process.env);

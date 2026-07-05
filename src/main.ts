@@ -31,10 +31,11 @@ async function main() {
     config,
     settings,
   );
-  const analysis = await analyzeTrends(enrichedTweets, config, settings);
+  const topic = config.TOPIC;
+  const analysis = await analyzeTrends(enrichedTweets, config, settings, topic);
 
   console.info("[4/4] Slack へ投稿中...");
-  await postToSlack(analysis, config);
+  await postToSlack(analysis, config, topic);
 
   console.info("すべての処理が完了しました");
 }

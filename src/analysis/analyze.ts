@@ -4,8 +4,8 @@ import {
   analysisResponseSchema,
   type Analysis,
 } from "./schema.js";
-import { TREND_ANALYSIS_PROMPT } from "./prompts.js";
-import type { Config } from "../config.js";
+import { getTrendAnalysisPrompt } from "./prompts.js";
+import type { Config, Topic } from "../config.js";
 import type { Settings } from "../settings.js";
 import type { EnrichedTweet } from "../types.js";
 import { UserFacingError } from "../utils/errors.js";
@@ -15,6 +15,7 @@ export async function analyzeTrends(
   tweets: EnrichedTweet[],
   config: Config,
   settings: Settings,
+  topic: Topic = "ai",
 ): Promise<Analysis> {
   console.info("[3b/4] タイムライン全体を Gemini Pro で分析中...");
   const ai = new GoogleGenAI({ apiKey: config.GEMINI_API_KEY });
@@ -29,7 +30,7 @@ export async function analyzeTrends(
     }),
   );
 
-  const prompt = TREND_ANALYSIS_PROMPT.replace(
+  const prompt = getTrendAnalysisPrompt(topic).replace(
     "{json_data}",
     JSON.stringify(tweetsForPrompt, null, 2),
   );

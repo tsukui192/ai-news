@@ -34,7 +34,7 @@ async function fetchFromX(
     accessSecret: config.X_ACCESS_TOKEN_SECRET,
   });
 
-  const me = await client.v2.me();
+  const me = await retryOnServiceUnavailable(() => client.v2.me());
   const userId = me.data.id;
   console.info(`X 認証成功: @${me.data.username} (${userId})`);
 
@@ -45,14 +45,14 @@ async function fetchFromX(
   let paginationToken: string | undefined;
 
   while (posts.length < settings.schedule.maxTweets) {
-    const timeline = await client.v2.homeTimeline({
+    const timeline = await retryOnServiceUnavailable(() => client.v2.homeTimeline({
       max_results: 100,
       ...(paginationToken ? { pagination_token: paginationToken } : {}),
       "tweet.fields": "created_at,text,author_id,referenced_tweets,note_tweet",
       "user.fields": "username",
       expansions: "author_id,referenced_tweets.id",
       exclude: "retweets",
-    });
+    }));
 
     if (!timeline.data.data?.length) break;
 
@@ -109,6 +109,27 @@ async function fetchFromX(
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function retryOnServiceUnavailable<T>(
+  fn: () => Promise<T>,
+  maxRetries = 3,
+): Promise<T> {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await fn();
+    } catch (err: unknown) {
+      const status = (err as { code?: number })?.code;
+      if (status === 503 && i < maxRetries - 1) {
+        const waitMs = (i + 1) * 10_000;
+        console.warn(`X API 503 エラー。${waitMs / 1000}秒後にリトライ (${i + 1}/${maxRetries})...`);
+        await sleep(waitMs);
+      } else {
+        throw err;
+      }
+    }
+  }
+  throw new Error("リトライ上限に達しました");
 }
 
 // twitter-api-v2 の型定義には note_tweet が含まれないため unknown 経由でアクセス

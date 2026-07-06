@@ -22,7 +22,11 @@ export async function summarizeUrls(
   const entries = [...urlContents.entries()];
 
   const chunks = chunkArray(entries, settings.urlContent.parallelism);
-  for (const chunk of chunks) {
+  for (let i = 0; i < chunks.length; i++) {
+    if (i > 0 && settings.urlContent.interChunkDelayMs > 0) {
+      await sleep(settings.urlContent.interChunkDelayMs);
+    }
+    const chunk = chunks[i];
     const results = await Promise.allSettled(
       chunk.map(async ([url, content]) => {
         const truncated = content.slice(
@@ -35,11 +39,13 @@ export async function summarizeUrls(
           truncated,
         );
 
-        const res = await ai.models.generateContent({
-          model: settings.analysis.urlSummaryModel,
-          contents: prompt,
-          config: { temperature: 0 },
-        });
+        const res = await retryOnRateLimit(() =>
+          ai.models.generateContent({
+            model: settings.analysis.urlSummaryModel,
+            contents: prompt,
+            config: { temperature: 0 },
+          }),
+        );
 
         const text = res.text?.slice(0, settings.urlContent.maxSummaryChars);
         return { url, summary: text ?? "" };
@@ -73,5 +79,47 @@ function buildFullText(tweet: RawTweet): string {
     text += `\n${tweet.quotedText}`;
   }
   return text;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function retryOnRateLimit<T>(
+  fn: () => Promise<T>,
+  maxRetries = 4,
+): Promise<T> {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await fn();
+    } catch (err: unknown) {
+      const status =
+        (err as { status?: number })?.status ??
+        (err as { code?: number })?.code;
+      if (status !== 429 || i >= maxRetries - 1) throw err;
+
+      // Gemini の retryDelay をパース（例: "32s"）して待機。取れなければ指数バックオフ。
+      const retryDelayStr = (
+        err as {
+          errorDetails?: Array<{ retryDelay?: string }>;
+        }
+      )?.errorDetails?.find((d) => d.retryDelay)?.retryDelay;
+
+      const retryMs = retryDelayStr
+        ? parseRetryDelay(retryDelayStr)
+        : Math.min(2 ** i * 15_000, 60_000);
+
+      console.warn(
+        `Gemini 429 レート制限。${retryMs / 1000}秒後にリトライ (${i + 1}/${maxRetries})...`,
+      );
+      await sleep(retryMs);
+    }
+  }
+  throw new Error("Gemini リトライ上限に達しました");
+}
+
+function parseRetryDelay(s: string): number {
+  const match = /^(\d+(?:\.\d+)?)s$/.exec(s);
+  return match ? Math.ceil(parseFloat(match[1])) * 1000 : 30_000;
 }
 

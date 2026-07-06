@@ -21,7 +21,7 @@ export interface Settings {
 export const settings: Settings = {
   schedule: {
     lookbackHours: 24,
-    maxTweets: 500,
+    maxTweets: 200,
   },
   urlContent: {
     enabled: true,

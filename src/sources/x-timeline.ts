@@ -45,14 +45,24 @@ async function fetchFromX(
   let paginationToken: string | undefined;
 
   while (posts.length < settings.schedule.maxTweets) {
-    const timeline = await retryOnServiceUnavailable(() => client.v2.homeTimeline({
-      max_results: 100,
-      ...(paginationToken ? { pagination_token: paginationToken } : {}),
-      "tweet.fields": "created_at,text,author_id,referenced_tweets,note_tweet",
-      "user.fields": "username",
-      expansions: "author_id,referenced_tweets.id",
-      exclude: "retweets",
-    }));
+    let timeline;
+    try {
+      timeline = await retryOnServiceUnavailable(() => client.v2.homeTimeline({
+        max_results: 100,
+        ...(paginationToken ? { pagination_token: paginationToken } : {}),
+        "tweet.fields": "created_at,text,author_id,referenced_tweets,note_tweet",
+        "user.fields": "username",
+        expansions: "author_id,referenced_tweets.id",
+        exclude: "retweets",
+      }));
+    } catch (err: unknown) {
+      const status = (err as { code?: number })?.code;
+      if (status === 402) {
+        console.warn(`X API 402 残高不足。取得済みの ${posts.length}件 で処理を続行します。`);
+        break;
+      }
+      throw err;
+    }
 
     if (!timeline.data.data?.length) break;
 

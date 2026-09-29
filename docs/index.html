@@ -3,456 +3,433 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AIニュース & 水素市場ニュース 自動配信ツール 図解</title>
+  <title>水素市場ニュース 自動配信ツール 図解</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: #0d1117;
       color: #e6edf3;
-      padding: 48px 24px;
+      padding: 56px 24px;
+      line-height: 1.7;
     }
-    .container { max-width: 980px; margin: 0 auto; }
-    h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
-    h2 { font-size: 18px; font-weight: 600; color: #e6edf3; margin-bottom: 16px; }
-    h3 { font-size: 14px; font-weight: 600; color: #e6edf3; margin-bottom: 8px; }
-    p { color: #8b949e; font-size: 14px; line-height: 1.7; }
-    .subtitle { color: #8b949e; font-size: 15px; margin-bottom: 40px; line-height: 1.6; }
-    .section { margin-bottom: 48px; }
-    hr { border: none; border-top: 1px solid #30363d; margin-bottom: 40px; }
+    .container { max-width: 900px; margin: 0 auto; }
 
-    /* Flow */
-    .flow { display: flex; align-items: flex-start; gap: 0; overflow-x: auto; padding: 8px 0 16px; }
-    .node { min-width: 150px; background: #161b22; border-radius: 10px; padding: 12px 14px 14px; flex-shrink: 0; }
-    .node-step { font-size: 10px; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 6px; }
-    .node-label { font-size: 14px; font-weight: 700; color: #e6edf3; margin-bottom: 4px; }
-    .node-sub { font-size: 11px; color: #8b949e; line-height: 1.4; }
-    .node-detail { font-size: 11px; color: #58a6ff; margin-top: 6px; line-height: 1.4; border-top: 1px solid #30363d; padding-top: 6px; }
-    .arrow { font-size: 20px; color: #30363d; padding: 0 6px; flex-shrink: 0; margin-top: 32px; }
+    /* Typography */
+    h1 { font-size: 30px; font-weight: 700; margin-bottom: 10px; }
+    h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; color: #e6edf3; }
+    h3 { font-size: 14px; font-weight: 700; color: #e6edf3; margin-bottom: 6px; }
+    p  { color: #8b949e; font-size: 14px; line-height: 1.8; }
+    ul { color: #8b949e; font-size: 14px; padding-left: 18px; }
+    li { margin-bottom: 4px; }
+
+    .subtitle { color: #8b949e; font-size: 15px; margin-bottom: 12px; }
+    .lead { font-size: 15px; color: #c9d1d9; line-height: 1.8; margin-bottom: 0; }
+
+    /* Section */
+    .section { margin-bottom: 60px; }
+    .section-head { margin-bottom: 20px; }
+    .section-desc { color: #8b949e; font-size: 14px; margin-top: 6px; }
+    hr { border: none; border-top: 1px solid #21262d; margin: 48px 0; }
+
+    /* Step number badge */
+    .step-num {
+      display: inline-block;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      font-size: 12px; font-weight: 700;
+      line-height: 26px; text-align: center;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+
+    /* Flow diagram */
+    .flow { display: flex; align-items: flex-start; gap: 0; overflow-x: auto; padding: 4px 0 20px; }
+    .flow-node {
+      min-width: 155px;
+      background: #161b22;
+      border-radius: 10px;
+      padding: 14px 14px 16px;
+      flex-shrink: 0;
+    }
+    .flow-step { font-size: 10px; font-weight: 700; letter-spacing: 0.6px; margin-bottom: 6px; }
+    .flow-label { font-size: 14px; font-weight: 700; color: #e6edf3; margin-bottom: 4px; }
+    .flow-sub { font-size: 11px; color: #8b949e; line-height: 1.4; }
+    .flow-arrow { font-size: 22px; color: #30363d; padding: 0 6px; flex-shrink: 0; margin-top: 30px; }
+
+    /* Step cards */
+    .steps { display: flex; flex-direction: column; gap: 20px; }
+    .step-card {
+      display: flex;
+      gap: 20px;
+      background: #161b22;
+      border: 1px solid #21262d;
+      border-radius: 10px;
+      padding: 20px 24px;
+    }
+    .step-card-num {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      font-size: 13px; font-weight: 700;
+      line-height: 32px; text-align: center;
+      flex-shrink: 0;
+    }
+    .step-card-body { flex: 1; }
+    .step-card-title { font-size: 15px; font-weight: 700; color: #e6edf3; margin-bottom: 4px; }
+    .step-card-service { font-size: 12px; font-weight: 600; margin-bottom: 10px; }
+    .step-card-desc { font-size: 14px; color: #8b949e; line-height: 1.8; }
+    .step-card-note {
+      margin-top: 10px;
+      background: #0d1117;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #58a6ff;
+      line-height: 1.6;
+    }
 
     /* Grid */
-    .grid { display: grid; gap: 16px; }
-    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid { display: grid; gap: 14px; }
     .grid-3 { grid-template-columns: repeat(3, 1fr); }
     .grid-4 { grid-template-columns: repeat(4, 1fr); }
 
     /* Card */
-    .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; overflow: hidden; }
-    .card-header { padding: 10px 14px; font-size: 12px; font-weight: 600; color: #e6edf3; border-bottom: 1px solid #30363d; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-    .card-body { padding: 12px 14px; font-size: 12px; color: #8b949e; line-height: 1.6; }
-    .card-body ul { padding-left: 16px; }
-    .card-body li { margin-bottom: 4px; }
+    .card { background: #161b22; border: 1px solid #21262d; border-radius: 8px; overflow: hidden; }
+    .card-header {
+      padding: 10px 14px;
+      font-size: 12px; font-weight: 600; color: #e6edf3;
+      border-bottom: 1px solid #21262d;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .card-body { padding: 12px 14px; font-size: 13px; color: #8b949e; line-height: 1.6; }
+    .card-body ul { padding-left: 14px; }
+
+    /* Region cards */
+    .region-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .region-card { background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 14px; }
+    .region-flag { font-size: 20px; margin-bottom: 6px; }
+    .region-name { font-size: 13px; font-weight: 700; color: #e6edf3; margin-bottom: 6px; }
+    .region-kw { font-size: 11px; color: #58a6ff; margin-bottom: 8px; line-height: 1.4; }
+    .region-why { font-size: 12px; color: #8b949e; line-height: 1.5; }
 
     /* Callout */
-    .callout { background: #1f2937; border-left: 3px solid #3b82f6; border-radius: 6px; padding: 12px 16px; font-size: 13px; color: #93c5fd; line-height: 1.6; margin-bottom: 16px; }
+    .callout {
+      background: #1c2433;
+      border-left: 3px solid #3b82f6;
+      border-radius: 0 6px 6px 0;
+      padding: 12px 16px;
+      font-size: 13px; color: #93c5fd;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+    .callout-success {
+      background: #162420;
+      border-left-color: #3fb950;
+      color: #56d364;
+    }
 
     /* Badge */
-    .badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: #21262d; color: #8b949e; border: 1px solid #30363d; white-space: nowrap; }
-    .badge-active { background: #1f6feb33; color: #58a6ff; border-color: #1f6feb; }
-    .badge-free { color: #3fb950; border-color: #238636; }
-    .badge-paid { color: #f85149; border-color: #da3633; }
+    .badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: #21262d; color: #8b949e; border: 1px solid #30363d; }
+    .badge-free { color: #3fb950; border-color: #238636; background: #12261e; }
 
-    /* Stats */
-    .stats { display: flex; gap: 32px; flex-wrap: wrap; }
-    .stat-value { font-size: 24px; font-weight: 700; color: #e6edf3; }
+    /* Stats row */
+    .stats { display: flex; gap: 36px; flex-wrap: wrap; }
+    .stat-value { font-size: 26px; font-weight: 700; color: #e6edf3; }
     .stat-label { font-size: 12px; color: #8b949e; margin-top: 2px; }
 
     /* Pills */
     .pills { display: flex; flex-wrap: wrap; gap: 8px; }
     .pill { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: #21262d; color: #e6edf3; border: 1px solid #30363d; }
 
-    /* Tabs */
-    .tabs { display: flex; gap: 8px; margin-bottom: 32px; }
-    .tab { padding: 8px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid #30363d; background: #161b22; color: #8b949e; transition: all 0.15s; }
-    .tab.active { background: #1f6feb; border-color: #1f6feb; color: #fff; }
-    .page { display: none; }
-    .page.active { display: block; }
-
-    /* Compare table */
-    .compare { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .compare th { background: #161b22; padding: 10px 14px; text-align: left; font-weight: 600; border: 1px solid #30363d; color: #8b949e; }
-    .compare td { padding: 10px 14px; border: 1px solid #30363d; color: #e6edf3; vertical-align: top; line-height: 1.5; }
-    .compare tr:nth-child(even) td { background: #0d1117; }
-    .highlight { color: #3fb950; font-weight: 600; }
-
-    @media (max-width: 600px) {
-      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    @media (max-width: 640px) {
+      .grid-3, .grid-4, .region-grid { grid-template-columns: 1fr 1fr; }
       .flow { flex-direction: column; }
-      .arrow { transform: rotate(90deg); margin: 4px auto; }
-      h1 { font-size: 22px; }
+      .flow-arrow { transform: rotate(90deg); margin: 4px auto; }
+      .step-card { flex-direction: column; gap: 12px; }
     }
   </style>
 </head>
 <body>
 <div class="container">
 
-  <h1>自動ニュース配信ツール 図解</h1>
-  <p class="subtitle">Cursorを使ったコーディングで作成した、ニュースを自動収集・分析・配信するツールの仕組みを図解します。</p>
-
-  <div class="tabs">
-    <button class="tab active" onclick="showPage('ai', this)">AIニュース版</button>
-    <button class="tab" onclick="showPage('h2', this)">水素市場ニュース版</button>
+  <!-- Hero -->
+  <div class="section">
+    <p class="subtitle">自動化ツール 図解</p>
+    <h1>水素市場ニュース<br>自動配信ツール</h1>
+    <p class="lead" style="margin-top:16px;">
+      世界7カ国・地域の水素関連ニュースを毎朝自動で収集し、AIが日本語でトレンド分析してSlackに届けるツール。
+      コードで自動化することで、毎日手作業でニュースを調べる手間をゼロにした。
+    </p>
   </div>
 
-  <!-- ===== AIニュース版 ===== -->
-  <div id="page-ai" class="page active">
+  <hr>
 
-    <div class="section">
-      <h2>ツール概要</h2>
-      <p>Xのタイムラインから24時間以内のAI関連ニュースを自動収集し、GeminiのAIで分析してSlackに投稿するツール。毎朝7:30に自動実行され、その日の主要AIニュースをSlackに届ける。</p>
+  <!-- 全体フロー -->
+  <div class="section">
+    <div class="section-head">
+      <h2>全体の流れ（3ステップ）</h2>
+      <p class="section-desc">毎朝7:30になると自動で以下の処理が動く。人間が何もしなくてもSlackにレポートが届く。</p>
     </div>
-    <hr>
-
-    <div class="section">
-      <h2>処理フロー（4ステップ）</h2>
-      <div class="flow">
-        <div class="node" style="border:1.5px solid #6366f1;">
-          <div class="node-step" style="color:#6366f1;">トリガー</div>
-          <div class="node-label">GitHub Actions</div>
-          <div class="node-sub">毎朝 07:30 自動起動</div>
-          <div class="node-detail">クラウド上で自動実行<br>PCの電源不要</div>
-        </div>
-        <div class="arrow">→</div>
-        <div class="node" style="border:1.5px solid #0ea5e9;">
-          <div class="node-step" style="color:#0ea5e9;">① 収集</div>
-          <div class="node-label">X API</div>
-          <div class="node-sub">タイムライン最大500件</div>
-          <div class="node-detail">24時間以内のツイートのみ<br>リツイートは除外</div>
-        </div>
-        <div class="arrow">→</div>
-        <div class="node" style="border:1.5px solid #0ea5e9;">
-          <div class="node-step" style="color:#0ea5e9;">② 取得</div>
-          <div class="node-label">Jina Reader</div>
-          <div class="node-sub">URL本文を並列10件取得</div>
-          <div class="node-detail">記事の本文を自動抽出<br>タイムアウト10秒</div>
-        </div>
-        <div class="arrow">→</div>
-        <div class="node" style="border:1.5px solid #8b5cf6;">
-          <div class="node-step" style="color:#8b5cf6;">③a 要約</div>
-          <div class="node-label">Gemini Flash</div>
-          <div class="node-sub">各URLを200文字で要約</div>
-          <div class="node-detail">軽量モデルで高速処理<br>大量のURLを安価に処理</div>
-        </div>
-        <div class="arrow">→</div>
-        <div class="node" style="border:1.5px solid #8b5cf6;">
-          <div class="node-step" style="color:#8b5cf6;">③b 分析</div>
-          <div class="node-label">Gemini Pro</div>
-          <div class="node-sub">3カテゴリにトレンド分析</div>
-          <div class="node-detail">高性能モデルで精度重視<br>構造化JSONで出力</div>
-        </div>
-        <div class="arrow">→</div>
-        <div class="node" style="border:1.5px solid #10b981;">
-          <div class="node-step" style="color:#10b981;">④ 配信</div>
-          <div class="node-label">Slack</div>
-          <div class="node-sub">Block Kit形式で投稿</div>
-          <div class="node-detail">見やすいカード形式<br>ソースURLリンク付き</div>
-        </div>
+    <div class="flow">
+      <div class="flow-node" style="border:1.5px solid #6366f1;">
+        <div class="flow-step" style="color:#6366f1;">トリガー</div>
+        <div class="flow-label">GitHub Actions</div>
+        <div class="flow-sub">毎朝 07:30 自動起動<br>PCの電源は不要</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="border:1.5px solid #0ea5e9;">
+        <div class="flow-step" style="color:#0ea5e9;">① 収集</div>
+        <div class="flow-label">Google News RSS</div>
+        <div class="flow-sub">7カ国・地域から<br>水素ニュースを取得</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="border:1.5px solid #8b5cf6;">
+        <div class="flow-step" style="color:#8b5cf6;">② 分析</div>
+        <div class="flow-label">Gemini 2.5 Pro</div>
+        <div class="flow-sub">水素市場のトレンドを<br>日本語でAI分析</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="border:1.5px solid #10b981;">
+        <div class="flow-step" style="color:#10b981;">③ 配信</div>
+        <div class="flow-label">Slack</div>
+        <div class="flow-sub">日本語レポートを<br>チャンネルに投稿</div>
       </div>
     </div>
-    <hr>
+  </div>
 
-    <div class="section">
+  <hr>
+
+  <!-- ステップ詳細 -->
+  <div class="section">
+    <div class="section-head">
+      <h2>各ステップの詳細</h2>
+      <p class="section-desc">それぞれのステップで何が起きているかを解説する。</p>
+    </div>
+    <div class="steps">
+
+      <!-- トリガー -->
+      <div class="step-card">
+        <div class="step-card-num" style="background:#6366f122; color:#6366f1;">起</div>
+        <div class="step-card-body">
+          <div class="step-card-title">GitHub Actions が毎朝自動で起動する</div>
+          <div class="step-card-service" style="color:#6366f1;">サービス: GitHub Actions（無料）</div>
+          <div class="step-card-desc">
+            GitHub Actions は「スケジュールを決めてプログラムを自動実行できるクラウドサービス」。<br>
+            毎朝7:30（日本時間）になると自動でツールが動き出す。<strong style="color:#c9d1d9;">自分のPCの電源が入っていなくてもクラウド上で動くため、完全に手離れした自動化が実現できる。</strong>
+          </div>
+          <div class="step-card-note">設定ファイル（.github/workflows/hydrogen-news.yml）に「毎朝22:30 UTC（= 07:30 JST）に実行」と1行書くだけで動く。</div>
+        </div>
+      </div>
+
+      <!-- 収集 -->
+      <div class="step-card">
+        <div class="step-card-num" style="background:#0ea5e922; color:#0ea5e9;">①</div>
+        <div class="step-card-body">
+          <div class="step-card-title">世界7カ国・地域のニュースをまとめて収集する</div>
+          <div class="step-card-service" style="color:#0ea5e9;">サービス: Google News RSS（無料）</div>
+          <div class="step-card-desc">
+            Google News は「水素」「hydrogen」などのキーワードで世界中のニュースを検索できる。その検索結果をRSS（ニュースの一覧データ）として自動で取得する。<br><br>
+            米国・欧州・中国・韓国・オーストラリア・台湾・日本の7地域を同時に監視し、<strong style="color:#c9d1d9;">24時間以内に公開されたニュースだけを収集する。</strong> 同じ記事が重複していた場合は自動で除去する。
+          </div>
+          <div class="step-card-note">もともとのAIニュース版はX（Twitter）のAPIを使っていたが、水素版ではGoogle News RSSに切り替えることでX APIの費用（月約$75）をゼロにできた。</div>
+        </div>
+      </div>
+
+      <!-- 分析 -->
+      <div class="step-card">
+        <div class="step-card-num" style="background:#8b5cf622; color:#8b5cf6;">②</div>
+        <div class="step-card-body">
+          <div class="step-card-title">AIが収集したニュースをトレンド分析して日本語でまとめる</div>
+          <div class="step-card-service" style="color:#8b5cf6;">サービス: Gemini 2.5 Pro（無料枠内）</div>
+          <div class="step-card-desc">
+            収集したニュース記事をすべてGoogleのAI「Gemini 2.5 Pro」に渡す。AIは内容を読み込み、<strong style="color:#c9d1d9;">「主要ニュース」「注目アップデート」「技術トレンド」の3カテゴリに分類して日本語でまとめる。</strong><br><br>
+            英語・中国語・韓国語のニュースも自動的に日本語で要約されるため、多言語対応が不要になる。
+          </div>
+          <div class="step-card-note">AIへの指示（プロンプト）に「水素市場の観点で分析し、国・地域ごとの動向を意識すること」と書くことで、水素に特化した分析ができる。</div>
+        </div>
+      </div>
+
+      <!-- 配信 -->
+      <div class="step-card">
+        <div class="step-card-num" style="background:#10b98122; color:#10b981;">③</div>
+        <div class="step-card-body">
+          <div class="step-card-title">分析結果を見やすいカード形式でSlackに投稿する</div>
+          <div class="step-card-service" style="color:#10b981;">サービス: Slack（無料プラン）</div>
+          <div class="step-card-desc">
+            AIの分析結果をSlackの「Block Kit」という形式で整形して投稿する。Block Kitはテキストをカード状に並べる機能で、<strong style="color:#c9d1d9;">タイトル・詳細・ソースURLがセットになった見やすいレポートが自動生成される。</strong><br><br>
+            毎朝Slackを開くだけで、その日の世界の水素市場の動向を日本語で把握できる。
+          </div>
+          <div class="step-card-note">Slackに投稿するボット（AIニュースBot）を作成し、特定のチャンネルに招待するだけで設定完了。</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- 7カ国 -->
+  <div class="section">
+    <div class="section-head">
+      <h2>なぜこの7カ国・地域を選んだのか</h2>
+      <p class="section-desc">水素市場で注目度が高い国・地域を中心に選定した。</p>
+    </div>
+    <div class="region-grid">
+      <div class="region-card">
+        <div class="region-flag">🇺🇸</div>
+        <div class="region-name">米国</div>
+        <div class="region-kw">hydrogen market / green hydrogen</div>
+        <div class="region-why">世界最大の水素投資国。IRA（インフレ抑制法）による巨額補助金が水素産業を後押しする。</div>
+      </div>
+      <div class="region-card">
+        <div class="region-flag">🇪🇺</div>
+        <div class="region-name">欧州</div>
+        <div class="region-kw">hydrogen energy Europe</div>
+        <div class="region-why">EUが「水素戦略」を国家レベルで推進。ドイツ・オランダ・スペインが主要プレーヤー。</div>
+      </div>
+      <div class="region-card">
+        <div class="region-flag">🇨🇳</div>
+        <div class="region-name">中国</div>
+        <div class="region-kw">hydrogen China / 氢能</div>
+        <div class="region-why">世界最大の水素生産国。国家戦略として積極的に投資しており、燃料電池バスの普及が進む。</div>
+      </div>
+      <div class="region-card">
+        <div class="region-flag">🇰🇷</div>
+        <div class="region-name">韓国</div>
+        <div class="region-kw">hydrogen Korea / fuel cell</div>
+        <div class="region-why">現代自動車・SKグループなど大企業が燃料電池・水素自動車に注力している。</div>
+      </div>
+      <div class="region-card">
+        <div class="region-flag">🇦🇺</div>
+        <div class="region-name">オーストラリア</div>
+        <div class="region-kw">green hydrogen Australia</div>
+        <div class="region-why">太陽光・風力が豊富で安価なグリーン水素の生産・輸出国として日本への供給拠点になりうる。</div>
+      </div>
+      <div class="region-card">
+        <div class="region-flag">🇹🇼</div>
+        <div class="region-name">台湾</div>
+        <div class="region-kw">hydrogen Taiwan</div>
+        <div class="region-why">脱炭素政策の一環として水素の活用研究・実証実験が進んでいる。</div>
+      </div>
+      <div class="region-card">
+        <div class="region-flag">🇯🇵</div>
+        <div class="region-name">日本</div>
+        <div class="region-kw">水素 市場 / グリーン水素</div>
+        <div class="region-why">「水素基本戦略」を国家政策として推進。トヨタ・川崎重工・岩谷産業などが牽引する。</div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- Slackレポート -->
+  <div class="section">
+    <div class="section-head">
       <h2>Slackに届くレポートの構成</h2>
-      <div class="grid grid-3">
-        <div class="card">
-          <div class="card-header">🔥 主要なニュース・話題</div>
-          <div class="card-body">その日最も注目されたAIニュース。新モデル発表・研究論文など。タイトル・詳細・ソースURLがセットで届く。</div>
+      <p class="section-desc">AIが分析した内容を3つのカテゴリに整理して毎朝届ける。</p>
+    </div>
+    <div class="grid grid-3">
+      <div class="card">
+        <div class="card-header">🔥 主要なニュース・話題</div>
+        <div class="card-body">
+          その日の水素市場で最も重要なニュース。
+          <ul style="margin-top:8px;">
+            <li>大型プロジェクトの発表</li>
+            <li>各国政府の政策決定</li>
+            <li>企業間の提携・合意</li>
+            <li>大規模投資のニュース</li>
+          </ul>
         </div>
-        <div class="card">
-          <div class="card-header">⚡️ 注目のアップデート</div>
-          <div class="card-body">モデルやツールの新バージョン情報。機能追加・改善内容など。</div>
+      </div>
+      <div class="card">
+        <div class="card-header">⚡️ 注目のアップデート</div>
+        <div class="card-body">
+          水素市場の最新動向のアップデート情報。
+          <ul style="margin-top:8px;">
+            <li>補助金・規制の変更</li>
+            <li>実証実験の進捗報告</li>
+            <li>水素価格・コストの変化</li>
+            <li>各国の目標達成状況</li>
+          </ul>
         </div>
-        <div class="card">
-          <div class="card-header">💡 技術トレンド</div>
-          <div class="card-body">業界全体の技術動向。注目キーワードやパラダイムシフトなど。</div>
+      </div>
+      <div class="card">
+        <div class="card-header">💡 技術トレンド</div>
+        <div class="card-body">
+          水素に関する技術革新の動向分析。
+          <ul style="margin-top:8px;">
+            <li>水電解技術の進歩</li>
+            <li>輸送・貯蔵の革新</li>
+            <li>燃料電池の最新動向</li>
+            <li>コスト削減の技術</li>
+          </ul>
         </div>
       </div>
     </div>
-    <hr>
+  </div>
 
-    <div class="section">
-      <h2>規模感</h2>
-      <div class="stats">
-        <div><div class="stat-value">500件</div><div class="stat-label">最大取得ツイート数 / 日</div></div>
-        <div><div class="stat-value">24時間</div><div class="stat-label">遡るタイムライン範囲</div></div>
-        <div><div class="stat-value">10並列</div><div class="stat-label">URL本文の同時取得数</div></div>
-        <div><div class="stat-value">200文字</div><div class="stat-label">URL要約の最大文字数</div></div>
-        <div><div class="stat-value">3カテゴリ</div><div class="stat-label">Slackレポートの分類数</div></div>
+  <hr>
+
+  <!-- 料金 -->
+  <div class="section">
+    <div class="section-head">
+      <h2>料金：すべて無料で動く</h2>
+      <p class="section-desc">もともとのAIニュース版はX APIで月約$75かかっていたが、Google News RSSに切り替えたことで全サービス無料になった。</p>
+    </div>
+    <div class="callout callout-success">
+      月額費用 ¥0 円。クレジットカードの登録不要でフル機能が使える。
+    </div>
+    <div class="grid grid-4">
+      <div class="card">
+        <div class="card-header">GitHub Actions <span class="badge badge-free">無料</span></div>
+        <div class="card-body">月2,000分の無料実行枠内で完結。1回の実行は数分で終わる。</div>
+      </div>
+      <div class="card">
+        <div class="card-header">Google News RSS <span class="badge badge-free">無料</span></div>
+        <div class="card-body">完全無料。X APIが不要になったことで最大のコスト削減を実現した。</div>
+      </div>
+      <div class="card">
+        <div class="card-header">Gemini 2.5 Pro <span class="badge badge-free">無料</span></div>
+        <div class="card-body">Googleの無料枠内で動作。1日1回の実行なら追加費用は一切かからない。</div>
+      </div>
+      <div class="card">
+        <div class="card-header">Slack <span class="badge badge-free">無料</span></div>
+        <div class="card-body">無料プランのワークスペースで利用可能。</div>
       </div>
     </div>
-    <hr>
+  </div>
 
-    <div class="section">
-      <h2>使った技術・サービス</h2>
-      <div class="pills">
-        <span class="pill">GitHub Actions</span><span class="pill">X API v2</span>
-        <span class="pill">Jina Reader</span><span class="pill">Gemini 2.5 Flash</span>
-        <span class="pill">Gemini 2.5 Pro</span><span class="pill">Slack Block Kit</span>
-        <span class="pill">TypeScript</span><span class="pill">Node.js 22</span>
-      </div>
+  <hr>
+
+  <!-- 使った技術 -->
+  <div class="section">
+    <div class="section-head">
+      <h2>使った技術・サービス一覧</h2>
     </div>
-    <hr>
-
-    <div class="section">
-      <h2>料金</h2>
-      <div class="grid grid-4" style="max-width:720px;">
-        <div class="card"><div class="card-header">GitHub Actions <span class="badge badge-free">無料</span></div><div class="card-body">月2,000分無料枠内</div></div>
-        <div class="card"><div class="card-header">Gemini API <span class="badge badge-free">無料</span></div><div class="card-body">1日1回なら無料枠内</div></div>
-        <div class="card"><div class="card-header">Jina Reader <span class="badge badge-free">無料</span></div><div class="card-body">1Mトークン無料付与</div></div>
-        <div class="card"><div class="card-header">X API <span class="badge badge-paid">有料</span></div><div class="card-body">$0.005 / ツイート<br>500件/日 → 約$75/月</div></div>
-      </div>
+    <div class="pills">
+      <span class="pill">GitHub Actions</span>
+      <span class="pill">Google News RSS</span>
+      <span class="pill">Gemini 2.5 Pro</span>
+      <span class="pill">Slack Block Kit</span>
+      <span class="pill">TypeScript</span>
+      <span class="pill">Node.js 22</span>
     </div>
+  </div>
 
-  </div><!-- /page-ai -->
+  <hr>
 
-
-  <!-- ===== 水素市場版 ===== -->
-  <div id="page-h2" class="page">
-
-    <div class="section">
-      <h2>ツール概要</h2>
-      <p>AIニュース版をベースに応用して作成した、水素市場専門の自動配信ツール。世界7カ国・地域の水素関連ニュースをGoogle News RSSから自動収集し、GeminiのAIで日本語分析してSlackに投稿する。<strong style="color:#3fb950;">X API不要で全サービス無料</strong>で動作する。</p>
+  <!-- 規模感 -->
+  <div class="section">
+    <h2>数字で見る規模感</h2>
+    <div class="stats" style="margin-top:20px;">
+      <div><div class="stat-value">7</div><div class="stat-label">対象の国・地域数</div></div>
+      <div><div class="stat-value">24時間</div><div class="stat-label">監視する期間</div></div>
+      <div><div class="stat-value">3</div><div class="stat-label">レポートのカテゴリ数</div></div>
+      <div><div class="stat-value">¥0</div><div class="stat-label">月額費用</div></div>
+      <div><div class="stat-value">毎朝</div><div class="stat-label">自動実行の頻度</div></div>
     </div>
-    <hr>
-
-    <div class="section">
-      <h2>処理フロー（3ステップ）</h2>
-      <div class="callout">AIニュース版は4ステップだったが、Google News RSSには記事の説明文がはじめから含まれているため「URL本文取得（Jina Reader）」ステップが不要になり、3ステップに短縮できた。</div>
-      <div class="flow">
-        <div class="node" style="border:1.5px solid #6366f1;">
-          <div class="node-step" style="color:#6366f1;">トリガー</div>
-          <div class="node-label">GitHub Actions</div>
-          <div class="node-sub">毎朝 07:30 自動起動</div>
-          <div class="node-detail">クラウド上で自動実行<br>PCの電源不要</div>
-        </div>
-        <div class="arrow">→</div>
-        <div class="node" style="border:1.5px solid #0ea5e9; min-width:170px;">
-          <div class="node-step" style="color:#0ea5e9;">① 収集</div>
-          <div class="node-label">Google News RSS</div>
-          <div class="node-sub">7カ国・地域から取得</div>
-          <div class="node-detail">キーワード検索で収集<br>重複記事を自動除去<br>24時間以内に絞り込み</div>
-        </div>
-        <div class="arrow">→</div>
-        <div class="node" style="border:1.5px solid #8b5cf6;">
-          <div class="node-step" style="color:#8b5cf6;">② 分析</div>
-          <div class="node-label">Gemini 2.5 Pro</div>
-          <div class="node-sub">水素市場トレンド分析</div>
-          <div class="node-detail">日本語で出力<br>国・地域ごとに整理<br>構造化JSONで出力</div>
-        </div>
-        <div class="arrow">→</div>
-        <div class="node" style="border:1.5px solid #10b981;">
-          <div class="node-step" style="color:#10b981;">③ 配信</div>
-          <div class="node-label">Slack</div>
-          <div class="node-sub">日本語レポートを投稿</div>
-          <div class="node-detail">Block Kit形式<br>ソースURLリンク付き</div>
-        </div>
-      </div>
-    </div>
-    <hr>
-
-    <div class="section">
-      <h2>AIニュース版との比較</h2>
-      <table class="compare">
-        <tr>
-          <th>項目</th>
-          <th>AIニュース版</th>
-          <th>水素市場版</th>
-        </tr>
-        <tr>
-          <td>ステップ数</td>
-          <td>4ステップ</td>
-          <td><span class="highlight">3ステップ（シンプル）</span></td>
-        </tr>
-        <tr>
-          <td>ニュースソース</td>
-          <td>X（Twitter）タイムライン</td>
-          <td><span class="highlight">Google News RSS（7カ国）</span></td>
-        </tr>
-        <tr>
-          <td>対象範囲</td>
-          <td>自分がフォローしているアカウント</td>
-          <td><span class="highlight">世界中の水素関連ニュース</span></td>
-        </tr>
-        <tr>
-          <td>URL本文取得</td>
-          <td>Jina Readerで別途取得が必要</td>
-          <td><span class="highlight">RSSに説明文が含まれるためスキップ</span></td>
-        </tr>
-        <tr>
-          <td>出力言語</td>
-          <td>日本語</td>
-          <td><span class="highlight">日本語（英語記事も日本語で要約）</span></td>
-        </tr>
-        <tr>
-          <td>X API費用</td>
-          <td>$0.005/件（500件/日 → 約$75/月）</td>
-          <td><span class="highlight">不要・無料</span></td>
-        </tr>
-        <tr>
-          <td>合計費用</td>
-          <td>月約$75〜</td>
-          <td><span class="highlight">完全無料</span></td>
-        </tr>
-      </table>
-    </div>
-    <hr>
-
-    <div class="section">
-      <h2>対象7カ国・地域とRSSキーワード</h2>
-      <div class="grid grid-3" style="margin-bottom:16px;">
-        <div class="card">
-          <div class="card-header">🇺🇸 米国</div>
-          <div class="card-body">
-            <div style="margin-bottom:6px; color:#58a6ff; font-size:11px;">キーワード</div>
-            hydrogen market / green hydrogen / hydrogen energy / hydrogen fuel cell
-            <div style="margin-top:8px; color:#e6edf3; font-size:11px; font-weight:600;">注目理由</div>
-            世界最大の水素投資国。IRAによる巨額補助金政策が進行中。
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header">🇪🇺 欧州</div>
-          <div class="card-body">
-            <div style="margin-bottom:6px; color:#58a6ff; font-size:11px;">キーワード</div>
-            hydrogen energy Europe / green hydrogen Europe
-            <div style="margin-top:8px; color:#e6edf3; font-size:11px; font-weight:600;">注目理由</div>
-            EUの水素戦略が先進的。ドイツ・オランダが主要プレーヤー。
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header">🇨🇳 中国</div>
-          <div class="card-body">
-            <div style="margin-bottom:6px; color:#58a6ff; font-size:11px;">キーワード</div>
-            hydrogen China / 氢能 / green hydrogen China
-            <div style="margin-top:8px; color:#e6edf3; font-size:11px; font-weight:600;">注目理由</div>
-            世界最大の水素生産国。国家戦略として積極投資中。
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header">🇰🇷 韓国</div>
-          <div class="card-body">
-            <div style="margin-bottom:6px; color:#58a6ff; font-size:11px;">キーワード</div>
-            hydrogen Korea / hydrogen fuel cell Korea
-            <div style="margin-top:8px; color:#e6edf3; font-size:11px; font-weight:600;">注目理由</div>
-            現代・SKなど大企業が燃料電池・水素車に注力。
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header">🇦🇺 オーストラリア</div>
-          <div class="card-body">
-            <div style="margin-bottom:6px; color:#58a6ff; font-size:11px;">キーワード</div>
-            green hydrogen Australia
-            <div style="margin-top:8px; color:#e6edf3; font-size:11px; font-weight:600;">注目理由</div>
-            豊富な再生可能エネルギーで安価なグリーン水素を生産・輸出。
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header">🇹🇼 台湾</div>
-          <div class="card-body">
-            <div style="margin-bottom:6px; color:#58a6ff; font-size:11px;">キーワード</div>
-            hydrogen Taiwan / hydrogen fuel Taiwan
-            <div style="margin-top:8px; color:#e6edf3; font-size:11px; font-weight:600;">注目理由</div>
-            脱炭素政策の一環として水素活用の研究・実証が進む。
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header">🇯🇵 日本</div>
-          <div class="card-body">
-            <div style="margin-bottom:6px; color:#58a6ff; font-size:11px;">キーワード</div>
-            水素 市場 / 水素エネルギー / グリーン水素
-            <div style="margin-top:8px; color:#e6edf3; font-size:11px; font-weight:600;">注目理由</div>
-            水素基本戦略を国家政策として推進。トヨタ・川崎重工が牽引。
-          </div>
-        </div>
-      </div>
-    </div>
-    <hr>
-
-    <div class="section">
-      <h2>Slackに届くレポートの構成</h2>
-      <div class="grid grid-3">
-        <div class="card">
-          <div class="card-header">🔥 主要なニュース・話題</div>
-          <div class="card-body">
-            世界の水素市場で起きた最重要ニュース。<br><br>
-            <ul>
-              <li>大型投資・政策発表</li>
-              <li>新プロジェクトの始動</li>
-              <li>企業間の提携・合意</li>
-            </ul>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header">⚡️ 注目のアップデート</div>
-          <div class="card-body">
-            各国の水素関連動向のアップデート。<br><br>
-            <ul>
-              <li>政策・補助金の変更</li>
-              <li>実証実験の進捗</li>
-              <li>価格・コスト情報</li>
-            </ul>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header">💡 技術トレンド</div>
-          <div class="card-body">
-            水素に関する技術動向の分析。<br><br>
-            <ul>
-              <li>製造技術の進歩</li>
-              <li>輸送・貯蔵の革新</li>
-              <li>燃料電池の最新動向</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-    <hr>
-
-    <div class="section">
-      <h2>規模感</h2>
-      <div class="stats">
-        <div><div class="stat-value">7地域</div><div class="stat-label">RSSフィード取得元</div></div>
-        <div><div class="stat-value">24時間</div><div class="stat-label">遡るニュース範囲</div></div>
-        <div><div class="stat-value">重複除去</div><div class="stat-label">同タイトルを自動排除</div></div>
-        <div><div class="stat-value">日本語</div><div class="stat-label">Slackレポートの言語</div></div>
-        <div><div class="stat-value">¥0</div><div class="stat-label">月額費用</div></div>
-      </div>
-    </div>
-    <hr>
-
-    <div class="section">
-      <h2>使った技術・サービス</h2>
-      <div class="pills">
-        <span class="pill">GitHub Actions</span>
-        <span class="pill">Google News RSS</span>
-        <span class="pill">Gemini 2.5 Pro</span>
-        <span class="pill">Slack Block Kit</span>
-        <span class="pill">TypeScript</span>
-        <span class="pill">Node.js 22</span>
-      </div>
-    </div>
-    <hr>
-
-    <div class="section">
-      <h2>料金（すべて無料）</h2>
-      <div class="grid grid-4" style="max-width:720px;">
-        <div class="card"><div class="card-header">GitHub Actions <span class="badge badge-free">無料</span></div><div class="card-body">月2,000分の無料枠内で完結</div></div>
-        <div class="card"><div class="card-header">Google News RSS <span class="badge badge-free">無料</span></div><div class="card-body">完全無料。X APIが不要になった</div></div>
-        <div class="card"><div class="card-header">Gemini 2.5 Pro <span class="badge badge-free">無料</span></div><div class="card-body">1日1回の実行なら無料枠内</div></div>
-        <div class="card"><div class="card-header">Slack <span class="badge badge-free">無料</span></div><div class="card-body">無料プランで利用可能</div></div>
-      </div>
-    </div>
-
-  </div><!-- /page-h2 -->
+  </div>
 
 </div>
-
-<script>
-  function showPage(id, btn) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.getElementById('page-' + id).classList.add('active');
-    btn.classList.add('active');
-  }
-</script>
 </body>
 </html>
